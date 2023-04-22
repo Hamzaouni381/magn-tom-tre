@@ -40,6 +40,7 @@ dependencies:
   syncfusion_flutter_charts: ^20.4.53
   camera: 
   flutter_tts: ^3.6.3
+  sensors_plus: ^2.0.3
 
 dev_dependencies:
   flutter_test:
