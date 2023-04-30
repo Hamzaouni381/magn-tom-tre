@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
+class Draw extends StatelessWidget with PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -66,6 +66,6 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
 
 void main() {
   runApp(MaterialApp(
-    home: CustomAppBar(),
+    home: Draw(),
   ));
 }
