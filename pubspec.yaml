@@ -41,6 +41,7 @@ dependencies:
   camera: 
   flutter_tts: ^3.6.3
   sensors_plus: ^2.0.3
+  fl_heatmap: ^0.3.0
 
 dev_dependencies:
   flutter_test:

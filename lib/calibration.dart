@@ -1,15 +1,17 @@
 import 'dart:math';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'dart:async';
 
 class MagnetometerCalibration {
-  double _magXOffset = 0;
-  double _magYOffset = 0;
-  double _magZOffset = 0;
-  double _magXScale = 1;
-  double _magYScale = 1;
-  double _magZScale = 1;
+   double magXOffset = 0;
+   double magYOffset = 0;
+     double magZOffset = 0;
+   double magXScale = 1.5;
+  double magYScale = 1.5;
+    double magZScale = 1.5;
 
-  void calibrate(List<List<double>> magnetometerValues) {
-    if (magnetometerValues == null || magnetometerValues.isEmpty) {
+  List<double> calibrate(List<List<double>> tmp ) {
+    if (tmp == null || tmp.isEmpty) {
       throw ArgumentError('magnetometerValues cannot be null or empty');
     }
 
@@ -21,37 +23,44 @@ class MagnetometerCalibration {
     double maxY = double.negativeInfinity;
     double maxZ = double.negativeInfinity;
 
-    for (final values in magnetometerValues) {
+    for (final values in tmp) {
       final magX = values[0];
       final magY = values[1];
       final magZ = values[2];
 
       if (magX < minX) {
-        minX = magX;}
+        minX = magX;
+      }
       if (magY < minY) {
-        minY = magY;}
+        minY = magY;
+      }
       if (magZ < minZ) {
-        minZ = magZ;}
+        minZ = magZ;
+      }
       if (magX > maxX) {
-        maxX = magX;}
+        maxX = magX;
+      }
       if (magY > maxY) {
-        maxY = magY;}
-      if (magZ > maxZ){
+        maxY = magY;
+      }
+      if (magZ > maxZ) {
         maxZ = magZ;
       }
     }
 
     // Compute offsets and scales
-    _magXOffset = (minX + maxX) / 2;
-    _magYOffset = (minY + maxY) / 2;
-    _magZOffset = (minZ + maxZ) / 2;
-    _magXScale = (maxX - minX) / 2;
-    _magYScale = (maxY - minY) / 2;
-    _magZScale = (maxZ - minZ) / 2;
+    magXOffset = (minX + maxX) / 2;
+    magYOffset = (minY + maxY) / 2;
+    magZOffset = (minZ + maxZ) / 2;
+    magXScale = (maxX - minX) / 2;
+    magYScale = (maxY - minY) / 2;
+    magZScale = (maxZ - minZ) / 2;
+
+
+    return [ magXOffset,magYOffset,magZOffset,magXScale,magYScale,magZScale];
   }
-
-
-  List<double> applyCalibration(List<double> liste) {
+}
+ /* List<double> applyCalibration(List<double> liste) {
     if (liste == null || liste.length != 3) {
       throw ArgumentError('magnetometerValues must be a list of length 3');
     }
@@ -62,4 +71,4 @@ class MagnetometerCalibration {
 
     return [magX, magY, magZ];
   }
-}
+}*/
