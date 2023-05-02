@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:arrow_pad/arrow_pad.dart';
+import 'calibration.dart';
 
 void main() => runApp(MyApp());
 
@@ -25,19 +27,20 @@ class MyHomePage extends StatefulWidget {
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
+
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   // nombre de ligne etde collonnes
-  int rows = 5;
-  int cols = 5;
+  int rows = 10;
+  int cols = 10;
 
   // definir la taille de chaque cellule du matrice
-  double cellSize = 70;
+  double cellSize = 40;
 
   // initialiser la matrice par des zero
   List<List<double>> matrix = List.generate(
-      5, (i) => List.generate(5, (j) => 0.0));
+      10, (i) => List.generate(10, (j) => 0.0));
 
   // initialiser la position initial selectionée dans la matrice
   int selrow = 0;
@@ -56,7 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Update the matrix and cursor position based on the button press
-  void miseajourmatrice(String direction) {
+  List<List<double>> miseajourmatrice(String direction) {
+    MagnetometerCalibration magnetometerCalibration=MagnetometerCalibration();
     setState(() {
       if (direction == "left") {
         if (cursorCol > 0) {
@@ -76,10 +80,15 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       }
       if (magEvent != null) {
-        matrix[selrow][cursorCol] =
-            sqrt(magEvent!.x*magEvent!.x + magEvent!.y*magEvent!.y + magEvent!.z* magEvent!.z);
+        matrix[selrow][cursorCol] =calculateMagneticValue((magEvent!.x - magnetometerCalibration.magXOffset) / magnetometerCalibration.magXScale, (magEvent!.y - magnetometerCalibration.magYOffset) / magnetometerCalibration.magYScale,(magEvent!.z
+            - magnetometerCalibration.magZOffset) / magnetometerCalibration.magZScale);
       }
     });
+    return matrix;
+  }
+
+  double calculateMagneticValue(double x, double y, double z) {
+    return  sqrt(x * x + y * y + z * z);
   }
 
   @override
@@ -119,68 +128,20 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           const SizedBox(height: 10),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    color:Colors.blueAccent,
-                  ),
-                  child: IconButton(
-                    color:Colors.white,
-                    icon: const Icon(Icons.arrow_left),
-                    onPressed: () {
-                      miseajourmatrice("left");
-                    },
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    color:Colors.blueAccent,
-                  ),
-                  child: IconButton(
-                    color:Colors.white,
-                    icon: const Icon(Icons.arrow_upward),
-                    onPressed: () {
-                      miseajourmatrice("up");
-                    },
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    color:Colors.blueAccent,
-                  ),
-                  child: IconButton(
-                    color:Colors.white,
-                    icon: const Icon(Icons.arrow_downward),
-                    onPressed: () {
-                      miseajourmatrice("down");
-                    },
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    color:Colors.blueAccent,
-                  ),
-                  child: IconButton(
-                    color:Colors.white,
-                    icon: const Icon(Icons.arrow_right),
-                    onPressed: () {
-                      miseajourmatrice("right");
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
+          ArrowPad(
+            height: 130.0,
+            width: 130.0,
+            innerColor: Colors.grey,
+              iconColor: Colors.white,
+            arrowPadIconStyle: ArrowPadIconStyle.arrow,
+            clickTrigger: ClickTrigger.onTapDown,
+            onPressedUp: () =>miseajourmatrice("up"),
+            onPressedLeft: () => miseajourmatrice("left"),
+            onPressedRight: () =>miseajourmatrice("right"),
+            onPressedDown: () => miseajourmatrice("down")),
+
+
+
         ],
       ),
     );

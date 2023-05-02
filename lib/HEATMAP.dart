@@ -1,230 +1,86 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:fl_heatmap/fl_heatmap.dart';
+import 'new.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'calibration.dart';
+void main() => runApp((HeatMapApp2()));
 
-void main() => runApp((HeatMapApp()));
-
-class HeatMapApp extends StatefulWidget {
+class HeatMapApp2 extends StatefulWidget {
   @override
   _HeatMapState createState() => _HeatMapState();
 }
 
-class _HeatMapState extends State<HeatMapApp> {
+class _HeatMapState extends State<HeatMapApp2> {
   HeatmapItem? selectedItem;
   late HeatmapData heatmapData;
+  MagnetometerEvent? magEvent;
+  List<List<double>> matrix = List.generate(
+      10, (i) => List.generate(10, (j) => 0.0));
+  List<List<double>> valeurs = List.generate(
+      10, (i) => List.generate(10, (j) => 0.0));
+  // initialiser la position initial selectionée dans la matrice
+  int selrow = 0;
+  int cursorCol = 0;
+  // nombre de ligne etde collonnes
+  int rows = 10;
+  int cols = 10;
+
+  // Update the matrix and cursor position based on the button press
+  List<List<double>> miseajourmatrice(String direction) {
+    MagnetometerCalibration magnetometerCalibration=MagnetometerCalibration();
+    setState(() {
+      if (direction == "left") {
+        if (cursorCol > 0) {
+          cursorCol--;
+        }
+      } else if (direction == "right") {
+        if (cursorCol < cols - 1) {
+          cursorCol++;
+        }
+      } else if (direction == "up") {
+        if (selrow > 0) {
+          selrow--;
+        }
+      } else if (direction == "down") {
+        if (selrow < rows - 1) {
+          selrow++;
+        }
+      }
+      if (magEvent != null) {
+        matrix[selrow][cursorCol] =calculateMagneticValue((magEvent!.x - magnetometerCalibration.magXOffset) / magnetometerCalibration.magXScale, (magEvent!.y - magnetometerCalibration.magYOffset) / magnetometerCalibration.magYScale,(magEvent!.z
+            - magnetometerCalibration.magZOffset) / magnetometerCalibration.magZScale);
+      }
+    });
+    return matrix;
+  }
+
+  double calculateMagneticValue(double x, double y, double z) {
+    return  sqrt(x * x + y * y + z * z);
+  }
 
   @override
   void initState() {
     _initHeatMapData();
     super.initState();
   }
+  /*void initializeSensor() {
+    magnetometerEvents.listen((MagnetometerEvent event) {
+      setState(() {
+        magEvent = event;
+      });
+    });
+  }*/
 
-  void _initHeatMapData() {
-    List<List<double>> valeurs = [
-      [
-        1.48,
-        0.74,
-        1.12,
-        0.98,
-        1.73,
-        1.28,
-        0.33,
-        0.79,
-        0.42,
-        1.92,
-        1.64,
-        1.09,
-        0.64,
-        0.36,
-        1.39
-      ],
-      [
-        2.48,
-        1.74,
-        2.12,
-        2.98,
-        0.73,
-        1.28,
-        2.33,
-        0.79,
-        0.42,
-        3.92,
-        1.64,
-        0.09,
-        0.64,
-        2.36,
-        1.39
-      ],
-      [
-        1.5643275,
-        2.765487,
-        1.76,
-        2.764,
-        1.6743,
-        1.28,
-        0.33,
-        1.87687,
-        2.42,
-        1.92,
-        2.7683876,
-        1.09,
-        2.64,
-        1.36,
-        2.39
-      ],
-      [
-        0.99,
-        1.444,
-        1.12,
-        0.98,
-        1.73,
-        1.28,
-        0.33,
-        0.79,
-        0.42,
-        1.92,
-        1.64,
-        1.09,
-        0.64,
-        0.36,
-        1.39
-      ],
-      [
-        1.48,
-        0.74,
-        1.12,
-        0.98,
-        1.73,
-        1.28,
-        0.33,
-        0.79,
-        0.42,
-        1.92,
-        1.64,
-        1.09,
-        0.64,
-        0.36,
-        1.39
-      ],
-      [
-        1.48,
-        0.74,
-        1.12,
-        0.98,
-        1.73,
-        1.28,
-        0.33,
-        0.79,
-        0.42,
-        1.92,
-        1.64,
-        1.09,
-        0.64,
-        0.36,
-        1.39
-      ],
-      [
-        1.12,
-        0.98,
-        1.73,
-        1.28,
-        0.33,
-        0.79,
-        0.42,
-        1.92,
-        1.64,
-        1.09,
-        0.64,
-        0.36,
-        1.39,
-        2.4991,
-        2.171
-      ],
-      [
-        1.12,
-        0.98,
-        1.73,
-        1.28,
-        0.33,
-        0.79,
-        0.42,
-        1.92,
-        1.64,
-        1.09,
-        0.64,
-        0.36,
-        1.39,
-        0.79,
-        0.42
-      ],
-      [
-        1.48,
-        0.74,
-        1.12,
-        0.98,
-        1.73,
-        1.28,
-        0.33,
-        0.79,
-        0.42,
-        1.92,
-        1.64,
-        1.09,
-        0.64,
-        0.36,
-        1.39
-      ],
-      [
-        0.42,
-        1.05,
-        0.87,
-        1.73,
-        1.34,
-        0.67,
-        0.56,
-        1.45,
-        1.61,
-        0.39,
-        1.88,
-        1.16,
-        0.81,
-        1.52,
-        0.34
-      ],
-      [
-        0.95,
-        1.72,
-        0.67,
-        1.08,
-        1.91,
-        0.77,
-        1.37,
-        0.33,
-        1.12,
-        1.48,
-        0.49,
-        0.87,
-        1.63,
-        1.25,
-        0.62
-      ],
-      [
-        0.95,
-        1.72,
-        0.67,
-        1.08,
-        1.91,
-        0.77,
-        1.37,
-        0.33,
-        1.12,
-        1.48,
-        0.49,
-        0.87,
-        1.63,
-        1.25,
-        0.62
-      ],
-    ];
+  void _initHeatMapData() async{
+    magnetometerEvents.listen((MagnetometerEvent event) {
+      setState(() {
+        magEvent = event;
+      });
+    });
+    MyHomePage a =MyHomePage(title: 'Magnetometer App');
+    List<List<double>> valeurs = (await miseajourmatrice) as List<List<double>> ;
 
     final int l = valeurs.elementAt(0).length;
     final int c = valeurs.length;

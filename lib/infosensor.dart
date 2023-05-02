@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-
 class Info extends StatefulWidget {
   const Info({Key? key}) : super(key: key);
 
